@@ -1,0 +1,39 @@
+name: Deploy to AWS Elastic Beanstalk (Docker)
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11  # adjust to your needs
+
+      - name: Install AWS EB CLI
+        run: |
+          pip install --upgrade pip
+          pip install awsebcli
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Initialize EB CLI (if not committed)
+        run: |
+          eb init --platform docker --region ${{ secrets.AWS_REGION }} || echo "Already initialized"
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          eb deploy ${{ secrets.EB_ENV_NAME }} --staged
