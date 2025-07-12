@@ -5,10 +5,12 @@ from run import app
 
 client = TestClient(app)
 
+
 def test_read_products():
     response = client.get("/products")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+
 
 def test_create_and_get_product():
     # Create a product

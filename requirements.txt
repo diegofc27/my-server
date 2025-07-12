@@ -6,3 +6,4 @@ python-dotenv
 awsebcli
 flake8
 pytest
+httpx
